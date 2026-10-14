@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Работа с гипотезами</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text: #111827;
+      --line: #dbe5f1;
+      --button: #42A1A5;
+      --button-hover: #358b8f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 32px 20px;
+      background: #ffffff;
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .hypotheses {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      overflow: hidden;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #ffffff;
+    }
+
+    .card--full { grid-column: 1 / -1; }
+
+    .card__button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: var(--button);
+      color: #ffffff;
+      font: inherit;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .card__button:hover { background: var(--button-hover); }
+
+    .card__button:focus-visible {
+      outline: 3px solid rgba(66, 161, 165, 0.35);
+      outline-offset: 2px;
+    }
+
+    .card__chevron {
+      flex: 0 0 auto;
+      width: 12px;
+      height: 12px;
+      margin-left: 16px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg) translateY(-3px);
+      transform-origin: center;
+      transition: transform 0.25s ease;
+    }
+
+    .card__button[aria-expanded="true"] .card__chevron {
+      transform: rotate(225deg) translateY(-3px);
+    }
+
+    .card__content {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition: grid-template-rows 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
+    }
+
+    .card__content.is-open {
+      grid-template-rows: 1fr;
+      padding: 16px 4px 4px;
+      opacity: 1;
+    }
+
+    .card__content-inner { overflow: hidden; }
+
+    p { margin: 0; }
+    p + p { margin-top: 16px; }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid #9ca3af;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid #9ca3af;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    /* Ширина всех столбцов определяется содержимым без принудительных пропорций. */
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3) {
+      white-space: nowrap;
+    }
+
+    th {
+      background: #F2F2F2;
+      font-weight: 700;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 20px 12px; }
+      .hypotheses { grid-template-columns: 1fr; }
+      .card--full { grid-column: auto; }
+      .card__button { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="hypotheses" aria-label="Работа с гипотезами">
+    <section class="card card--full">
+      <button class="card__button" type="button" aria-expanded="false" aria-controls="why-content" id="why-button">
+        <span>Цель</span><span class="card__chevron" aria-hidden="true"></span>
+      </button>
+      <div class="card__content" id="why-content" role="region" aria-labelledby="why-button">
+        <div class="card__content-inner">
+          <p>Зафиксировать, на каких условиях держатся гипотезы, и по каким сигналам ты меняешь курс.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card--full">
+      <button class="card__button" type="button" aria-expanded="false" aria-controls="format-content" id="format-button">
+        <span>Формат</span><span class="card__chevron" aria-hidden="true"></span>
+      </button>
+      <div class="card__content" id="format-content" role="region" aria-labelledby="format-button">
+        <div class="card__content-inner">
+          <div class="table-wrapper" tabindex="0" aria-label="Таблица предположений">
+            <table>
+              <thead>
+                <tr>
+                  <th>Предположение</th><th>Уверенность<br>(1–10)</th><th>Цена ошибки<br>(1–10)</th><th>Ранний сигнал</th><th>Когда пересматриваем</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Ключевой клиент не уйдёт<br>после повышения цен на 15%</td><td>6</td><td>9</td><td>Доля повторных заказов ≥ 80%</td><td>Если упадёт ниже 75%<br>за месяц</td></tr>
+                <tr><td>Менеджеры готовы использовать<br>новые скрипты</td><td>7</td><td>6</td><td>Доля открывающих скрипт ≥ 50%</td><td>Если &lt; 50% две недели подряд</td></tr>
+                <tr><td>Два лучших аналитика<br>не выгорят и не уйдут</td><td>5</td><td>8</td><td>Регулярность one-to-one, отсутствие пропусков</td><td>Если пропуски ≥ 2<br>за месяц</td></tr>
+                <tr><td>Конкурент не выпустит аналогичный продукт в этом квартале</td><td>4</td><td>7</td><td>Мониторинг рынка, инсайды</td><td>Любой сигнал о запуске</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <button class="card__button" type="button" aria-expanded="false" aria-controls="priority-content" id="priority-button">
+        <span>Приоритет</span><span class="card__chevron" aria-hidden="true"></span>
+      </button>
+      <div class="card__content" id="priority-content" role="region" aria-labelledby="priority-button">
+        <div class="card__content-inner">
+          <p><strong>В первую очередь берёшь предположения, где ты меньше всего уверен, но ошибка обойдётся дороже всего.</strong></p>
+          <p><strong>Логика простая:</strong> если такое предположение окажется неверным, ты потеряешь больше всего времени и ресурсов — поэтому его выгоднее проверить раньше, пока ставка ещё небольшая.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <button class="card__button" type="button" aria-expanded="false" aria-controls="how-content" id="how-button">
+        <span>Как использовать</span><span class="card__chevron" aria-hidden="true"></span>
+      </button>
+      <div class="card__content" id="how-content" role="region" aria-labelledby="how-button">
+        <div class="card__content-inner">
+          <p><strong>Каждую неделю разбираешь 1–2 самых рискованных.</strong></p>
+          <p><strong>Если срабатывает триггер,</strong> это повод скорректировать или остановить гипотезу и обновить ближайший план Must‑задач.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll('.card__button').forEach((button) => {
+      button.addEventListener('click', () => {
+        const content = document.getElementById(button.getAttribute('aria-controls'));
+        const isOpen = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!isOpen));
+        content.classList.toggle('is-open', !isOpen);
+      });
+    });
+  </script>
+</body>
+</html>
